@@ -1,5 +1,3 @@
-
-```javascript
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -26,7 +24,7 @@ mongoose.connect(MONGODB_URI, {
 .then(() => console.log('✅ MongoDB connected successfully'))
 .catch(err => console.error('❌ MongoDB connection error:', err));
 
-// MongoDB Models
+// MongoDB Schemas
 const testSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
@@ -77,6 +75,7 @@ app.get('/api/tests', async (req, res) => {
     const tests = await Test.find().sort({ createdAt: -1 });
     res.json({ success: true, tests });
   } catch (error) {
+    console.error('Error fetching tests:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -90,6 +89,7 @@ app.get('/api/tests/:id', async (req, res) => {
     }
     res.json({ success: true, test });
   } catch (error) {
+    console.error('Error fetching test:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -105,6 +105,7 @@ app.post('/api/tests', async (req, res) => {
     
     res.json({ success: true, test, message: 'Test created successfully' });
   } catch (error) {
+    console.error('Error creating test:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -127,6 +128,7 @@ app.put('/api/tests/:id', async (req, res) => {
     
     res.json({ success: true, test, message: 'Test updated successfully' });
   } catch (error) {
+    console.error('Error updating test:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -145,6 +147,7 @@ app.delete('/api/tests/:id', async (req, res) => {
     
     res.json({ success: true, message: 'Test deleted successfully' });
   } catch (error) {
+    console.error('Error deleting test:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -153,13 +156,18 @@ app.delete('/api/tests/:id', async (req, res) => {
 app.post('/api/results', async (req, res) => {
   try {
     const resultData = req.body;
-    resultData.attemptId = `attempt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Generate unique attempt ID
+    const timestamp = Date.now();
+    const random = Math.random().toString(36).substring(2, 11);
+    resultData.attemptId = 'attempt-' + timestamp + '-' + random;
     
     const result = new Result(resultData);
     await result.save();
     
     res.json({ success: true, result, message: 'Result saved successfully' });
   } catch (error) {
+    console.error('Error saving result:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -182,6 +190,7 @@ app.get('/api/results/test/:testId', async (req, res) => {
     
     res.json({ success: true, results, stats });
   } catch (error) {
+    console.error('Error fetching results:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -197,6 +206,7 @@ app.get('/api/results/:attemptId', async (req, res) => {
     
     res.json({ success: true, result });
   } catch (error) {
+    console.error('Error fetching result:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -229,6 +239,7 @@ app.get('/api/results/history', async (req, res) => {
     
     res.json({ success: true, history });
   } catch (error) {
+    console.error('Error fetching history:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -246,7 +257,7 @@ app.post('/api/init-data', async (req, res) => {
         await Test.insertMany(sampleTests);
         res.json({ 
           success: true, 
-          message: `Initialized database with ${sampleTests.length} tests` 
+          message: 'Initialized database with ' + sampleTests.length + ' tests' 
         });
       } else {
         res.json({ 
@@ -257,10 +268,11 @@ app.post('/api/init-data', async (req, res) => {
     } else {
       res.json({ 
         success: true, 
-        message: `Database already contains ${count} tests` 
+        message: 'Database already contains ' + count + ' tests' 
       });
     }
   } catch (error) {
+    console.error('Error initializing data:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -279,234 +291,21 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// 404 handler
+app.use((req, res) => {
+  res.status(404).json({ success: false, message: 'Route not found' });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({ success: false, message: 'Internal server error' });
+});
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📝 Frontend: http://localhost:${PORT}`);
-  console.log(`🔌 API: http://localhost:${PORT}/api`);
+  console.log('🚀 Server running on port ' + PORT);
+  console.log('📝 Frontend: http://localhost:' + PORT);
+  console.log('🔌 API: http://localhost:' + PORT + '/api');
 });
-```
-
-## package.json
-
-```json
-{
-  "name": "ibps-test-platform",
-  "version": "1.0.0",
-  "description": "IBPS Exam Test Platform with MongoDB Integration",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
-  "keywords": ["ibps", "test", "exam", "mongodb"],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.6.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=14.0.0"
-  }
-}
-```
-
-## .env Configuration
-
-```env
-# MongoDB Connection String
-# For local development:
-MONGODB_URI=mongodb://localhost:27017/ibps-tests
-
-# For MongoDB Atlas (cloud):
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ibps-tests?retryWrites=true&w=majority
-
-# Server Port
-PORT=3000
-
-# Environment
-NODE_ENV=production
-```
-
-## Frontend API Service (api-service.js)
-
-Replace your `storage-service.js` with this API service:
-
-```javascript
-/**
- * API Service - Backend Integration Layer
- * Connects frontend to Node.js + MongoDB backend
- */
-
-const API_BASE_URL = window.location.origin + '/api';
-// For local development, use: const API_BASE_URL = 'http://localhost:3000/api';
-
-export const APIService = {
-  // ==================== TESTS ====================
-  
-  // Get all tests
-  async getAllTests() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tests`);
-      const data = await response.json();
-      return data.success ? data.tests : [];
-    } catch (error) {
-      console.error('Error fetching tests:', error);
-      return [];
-    }
-  },
-
-  // Get test by ID
-  async getTestById(testId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tests/${testId}`);
-      const data = await response.json();
-      return data.success ? data.test : null;
-    } catch (error) {
-      console.error('Error fetching test:', error);
-      return null;
-    }
-  },
-
-  // Create new test
-  async createTest(testData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tests`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testData)
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error creating test:', error);
-      return { success: false, message: error.message };
-    }
-  },
-
-  // Update test
-  async updateTest(testId, testData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tests/${testId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(testData)
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error updating test:', error);
-      return { success: false, message: error.message };
-    }
-  },
-
-  // Delete test
-  async deleteTest(testId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/tests/${testId}`, {
-        method: 'DELETE'
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error deleting test:', error);
-      return { success: false, message: error.message };
-    }
-  },
-
-  // ==================== RESULTS ====================
-  
-  // Save test result
-  async saveResult(resultData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/results`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(resultData)
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error saving result:', error);
-      return { success: false, message: error.message };
-    }
-  },
-
-  // Get results by test ID
-  async getResultsByTestId(testId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/results/test/${testId}`);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error fetching results:', error);
-      return { success: false, results: [], stats: {} };
-    }
-  },
-
-  // Get single result by attempt ID
-  async getResultById(attemptId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/results/${attemptId}`);
-      const data = await response.json();
-      return data.success ? data.result : null;
-    } catch (error) {
-      console.error('Error fetching result:', error);
-      return null;
-    }
-  },
-
-  // Get all attempt history
-  async getAttemptHistory() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/results/history`);
-      const data = await response.json();
-      return data.success ? data.history : {};
-    } catch (error) {
-      console.error('Error fetching history:', error);
-      return {};
-    }
-  },
-
-  // ==================== UTILITY ====================
-  
-  // Initialize database with sample data
-  async initializeData(testsData) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/init-data`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tests: testsData })
-      });
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error initializing data:', error);
-      return { success: false, message: error.message };
-    }
-  },
-
-  // Health check
-  async checkHealth() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/health`);
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error('Error checking health:', error);
-      return { success: false, message: 'Server unreachable' };
-    }
-  }
-};
-
-// Make it available globally
-window.APIService = APIService;
-```
-
