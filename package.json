@@ -1,6 +1,7 @@
 {
   "name": "ibps-test-platform-root",
   "version": "1.0.0",
+  "description": "IBPS Online Test Platform",
   "main": "server/server.js",
   "scripts": {
     "start": "cd server && npm start",
@@ -11,28 +12,3 @@
     "node": "18.x"
   }
 }
-,
-  "keywords": [
-    "ibps",
-    "test",
-    "platform",
-    "exam",
-    "mongodb",
-    "express"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.6.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": "18.x"
-  }
-}
-
