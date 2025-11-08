@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,145 +7,163 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Top Bar (Only Shows During Test) -->
+  <!-- ===== TOP BAR (Only during test) ===== -->
   <div class="top-bar" id="topBar" style="display: none;">
-    <div class="test-info">
+    <div class="top-bar-left">
       <h1 class="test-title">IBPS Test Platform</h1>
     </div>
-    <div class="timer" id="timerContainer">
+    <div class="top-bar-center">
+      <!-- Sections will be added here for sectional tests -->
+    </div>
+    <div class="top-bar-right">
       <span class="timer-label">Time Remaining:</span>
       <span class="timer-value" id="timerValue">30:00</span>
     </div>
   </div>
 
-  <!-- Dashboard -->
+  <!-- ===== DASHBOARD ===== -->
   <div id="dashboard" class="dashboard">
     <div class="dashboard-header">
       <h1>📚 IBPS Test Dashboard</h1>
       <p>Select a test to begin</p>
     </div>
+    <div id="dashboardContent"></div>
   </div>
 
-  <!-- Test Container (Hidden by default) -->
-  <div id="testContainer" class="main-content" style="display: none;">
-    <!-- Left Panel - Question -->
-    <div class="question-panel left-panel">
+  <!-- ===== TEST CONTAINER ===== -->
+  <div id="testContainer" class="test-wrapper" style="display: none;">
+    <!-- Left Panel: Question -->
+    <div class="left-panel">
       <div class="question-header">
         <div class="question-number">
           <span>Question No.</span>
-          <span id="currentQuestionNum">1</span>
+          <span id="currentQuestionNum" class="qnum">1</span>
         </div>
         <div class="font-controls">
-          <button class="font-btn" id="fontDecBtn">A-</button>
-          <button class="font-btn" id="fontIncBtn">A+</button>
+          <button class="font-btn" id="fontDecBtn" title="Decrease font">A-</button>
+          <button class="font-btn" id="fontIncBtn" title="Increase font">A+</button>
         </div>
       </div>
 
-      <div class="instructions-section">
-        <h3>Instructions</h3>
-        <p id="instructionsText"></p>
-        <div id="instructionImageContainer" class="instruction-image-container" style="display: none;">
-          <img id="instructionImage" alt="Instruction" />
+      <!-- Instructions Section -->
+      <div class="instructions-box">
+        <div class="section-title">Instructions</div>
+        <p id="instructionsText" class="instruction-text"></p>
+        <div id="instructionImageContainer" style="display: none;">
+          <img id="instructionImage" alt="Instruction" class="instruction-img" />
         </div>
       </div>
 
-      <div class="question-content center-panel">
+      <!-- Question Content -->
+      <div class="question-box">
         <div class="question-text">
-          <p class="question-en" id="questionEn"></p>
-          <p class="question-hi" id="questionHi"></p>
+          <p id="questionEn" class="question-en"></p>
+          <p id="questionHi" class="question-hi"></p>
         </div>
 
         <div class="options-container" id="optionsContainer">
-          <!-- Options will be populated by JS -->
+          <!-- Options populated by JS -->
         </div>
 
-        <div class="question-time">
-          <span>Time spent on this question: </span>
-          <span id="questionTime">00:00</span>
+        <div class="question-footer">
+          <span>Time spent on this question: <span id="questionTime">00:00</span></span>
         </div>
       </div>
 
-      <div class="action-buttons">
-        <button class="btn-action btn-review" id="markReviewBtn">Mark for Review</button>
+      <!-- Action Buttons -->
+      <div class="action-buttons-group">
+        <button class="btn-action btn-mark-review" id="markReviewBtn">Mark for Review</button>
         <button class="btn-action btn-clear" id="clearBtn">Clear Response</button>
-        <button class="btn-action btn-save" id="saveNextBtn">Save & Next</button>
+        <button class="btn-action btn-save-next" id="saveNextBtn">Save & Next</button>
       </div>
     </div>
 
-    <!-- Right Panel - Palette -->
-    <div class="palette-panel right-panel">
-      <div class="panel-header">Question Palette</div>
-      <div class="palette-content">
-        <div class="status-legend">
-          <h3>Status Legend</h3>
-          <div class="legend-item">
-            <div class="legend-box answered"></div>
-            <span class="legend-text">Answered (<span id="answeredCount">0</span>)</span>
+    <!-- Right Panel: Question Palette -->
+    <div class="right-panel">
+      <div class="palette-header">Question Palette</div>
+
+      <!-- Status Legend -->
+      <div class="palette-section">
+        <div class="legend-title">Status Legend</div>
+        <div class="legend-items">
+          <div class="legend-row">
+            <div class="legend-dot" style="background: #10b981;"></div>
+            <span>Answered (<span id="answeredCount">0</span>)</span>
           </div>
-          <div class="legend-item">
-            <div class="legend-box not-answered"></div>
-            <span class="legend-text">Not Answered (<span id="notAnsweredCount">0</span>)</span>
+          <div class="legend-row">
+            <div class="legend-dot" style="background: #ef4444;"></div>
+            <span>Not Answered (<span id="notAnsweredCount">0</span>)</span>
           </div>
-          <div class="legend-item">
-            <div class="legend-box not-visited"></div>
-            <span class="legend-text">Not Visited (<span id="notVisitedCount">0</span>)</span>
+          <div class="legend-row">
+            <div class="legend-dot" style="background: #9ca3af;"></div>
+            <span>Not Visited (<span id="notVisitedCount">0</span>)</span>
           </div>
-          <div class="legend-item">
-            <div class="legend-box marked-review"></div>
-            <span class="legend-text">Marked for Review (<span id="markedReviewCount">0</span>)</span>
+          <div class="legend-row">
+            <div class="legend-dot" style="background: #8b5cf6;"></div>
+            <span>Marked for Review (<span id="markedReviewCount">0</span>)</span>
           </div>
         </div>
+      </div>
 
-        <h3>Questions</h3>
+      <!-- Questions Grid -->
+      <div class="palette-section">
+        <div class="legend-title">Questions</div>
         <div class="palette-grid" id="paletteGrid">
-          <!-- Palette buttons will be populated by JS -->
+          <!-- Palette buttons populated by JS -->
         </div>
+      </div>
 
-        <div class="palette-actions">
-          <button class="btn-palette btn-pause" id="pauseTestBtn">Pause Test</button>
-          <button class="btn-palette btn-submit" id="submitTestBtn">Submit Test</button>
-        </div>
+      <!-- Action Buttons -->
+      <div class="palette-actions">
+        <button class="btn-palette btn-pause" id="pauseTestBtn">Pause Test</button>
+        <button class="btn-palette btn-submit" id="submitTestBtn">Submit Test</button>
       </div>
     </div>
   </div>
 
-  <!-- Results Modal -->
-  <div id="resultsModal" class="modal">
-    <div class="modal-content results-modal">
+  <!-- ===== RESULTS MODAL ===== -->
+  <div id="resultsModal" class="modal" style="display: none;">
+    <div class="modal-overlay" onclick="this.parentElement.style.display='none'"></div>
+    <div class="modal-content">
       <div class="modal-header">
         <h2>🎉 Test Completed!</h2>
       </div>
 
       <div class="modal-body">
-        <div class="score-display">
-          <div class="score-value" id="scoreValue">0/10</div>
-          <div class="score-percentage" id="scorePercentage">0%</div>
+        <!-- Score Display -->
+        <div class="score-section">
+          <div class="score-display">
+            <div class="score-value" id="scoreValue">0/10</div>
+            <div class="score-percentage" id="scorePercentage">0%</div>
+          </div>
         </div>
 
+        <!-- Statistics Grid -->
         <div class="stats-grid">
-          <div class="stat-item">
+          <div class="stat-card">
             <div class="stat-label">Total</div>
             <div class="stat-value" id="statTotal">10</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-card">
             <div class="stat-label">Correct</div>
             <div class="stat-value stat-correct" id="statCorrect">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-card">
             <div class="stat-label">Wrong</div>
             <div class="stat-value stat-wrong" id="statWrong">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-card">
             <div class="stat-label">Skipped</div>
             <div class="stat-value" id="statSkipped">0</div>
           </div>
-          <div class="stat-item">
+          <div class="stat-card">
             <div class="stat-label">Time</div>
             <div class="stat-value" id="statTime">00:00</div>
           </div>
         </div>
 
-        <div class="results-table-container">
+        <!-- Results Table -->
+        <div class="results-table-wrapper">
           <h3>Question-wise Breakdown</h3>
           <table class="results-table">
             <thead>
@@ -159,15 +176,15 @@
               </tr>
             </thead>
             <tbody id="resultsTableBody">
-              <!-- Results will be populated by JS -->
+              <!-- Populated by JS -->
             </tbody>
           </table>
         </div>
+      </div>
 
-        <div class="results-actions">
-          <button class="btn-action btn-review" id="goHomeBtn">Go to Home</button>
-          <button class="btn-action btn-save" id="retakeBtn">Retake Test</button>
-        </div>
+      <div class="modal-footer">
+        <button class="btn-modal btn-home" id="goHomeBtn">Go to Home</button>
+        <button class="btn-modal btn-retake" id="retakeBtn">Retake Test</button>
       </div>
     </div>
   </div>
