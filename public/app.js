@@ -116,4 +116,4 @@ const sampleQuestions = [
 ];
 
 // Export for use in main.js
-console.log('✅ app.js loaded with', sampleQuestions.length, 'sample questions');
+
