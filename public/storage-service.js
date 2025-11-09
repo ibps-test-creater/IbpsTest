@@ -1,7 +1,9 @@
-// public/storage-service.js
 const API_BASE_URL = window.location.origin + '/api';
 
+console.log('📡 Storage Service - API Base:', API_BASE_URL);
+
 window.StorageService = {
+
   async getAllTests() {
     try {
       const response = await fetch(`${API_BASE_URL}/tests`);
@@ -32,7 +34,6 @@ window.StorageService = {
 
   async saveTest(testData) {
     try {
-      // Check if test exists to decide POST or PUT
       const existingTest = await this.getTestById(testData.id);
       const url = existingTest ? `${API_BASE_URL}/tests/${testData.id}` : `${API_BASE_URL}/tests`;
       const method = existingTest ? 'PUT' : 'POST';
@@ -53,5 +54,38 @@ window.StorageService = {
     }
   },
 
-  // Implement other APIs similarly (saveAttempt, getAttemptHistory etc.) if needed based on previous code
+  async getAttemptHistory() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/attempts/history/all`);
+      const data = await response.json();
+      if (data.success) {
+        return data.history || {};
+      }
+      return {};
+    } catch (e) {
+      console.error('Failed to fetch history', e);
+      return {};
+    }
+  },
+
+  async saveAttempt(attemptData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/attempts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(attemptData)
+      });
+      const data = await response.json();
+      if (data.success) {
+        return data.attempt;
+      }
+      return null;
+    } catch (e) {
+      console.error('Failed to save attempt', e);
+      return null;
+    }
+  }
+
 };
+
+console.log('✅ Storage Service initialized');
